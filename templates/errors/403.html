@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}403 Access Denied | PayGenius AI{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-8 col-lg-6 text-center">
+        <div class="glass-card py-5">
+            <h1 class="display-1 fw-bold text-danger mb-3" style="text-shadow: 0 0 15px rgba(220, 53, 69, 0.4);">403</h1>
+            <h2 class="text-white mb-4">Access Denied</h2>
+            <p class="text-muted mb-5">
+                You do not have the required administrative privileges or roles to view this resource. 
+                Please log in with an authorized account or contact support.
+            </p>
+            <a href="/" class="btn btn-premium rounded-pill px-5 py-2">Return to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

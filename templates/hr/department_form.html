@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} | PayGenius AI{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8 col-lg-6">
+        <!-- Back Link -->
+        <div class="mb-3">
+            <a href="{{ url_for('hr.list_departments') }}" class="text-muted text-decoration-none d-inline-flex align-items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left me-2" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+                </svg>
+                Back to Departments
+            </a>
+        </div>
+
+        <!-- Form Card -->
+        <div class="glass-card p-4">
+            <h3 class="text-white mb-1 fw-bold">{{ title }}</h3>
+            <p class="text-muted small mb-4">Provide department parameters to provision structure.</p>
+
+            <form method="POST">
+                {{ form.csrf_token }}
+
+                <!-- Department Name -->
+                <div class="mb-3">
+                    <label for="name" class="form-label text-light fw-medium">{{ form.name.label }}</label>
+                    {{ form.name(class="form-control bg-transparent border-secondary text-white" + (" is-invalid" if form.name.errors else ""), placeholder="e.g., Human Resources") }}
+                    {% if form.name.errors %}
+                        <div class="invalid-feedback">
+                            {{ form.name.errors[0] }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Department Code -->
+                <div class="mb-3">
+                    <label for="code" class="form-label text-light fw-medium">{{ form.code.label }}</label>
+                    {{ form.code(class="form-control bg-transparent border-secondary text-white" + (" is-invalid" if form.code.errors else ""), placeholder="e.g., HR") }}
+                    {% if form.code.errors %}
+                        <div class="invalid-feedback">
+                            {{ form.code.errors[0] }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Description -->
+                <div class="mb-4">
+                    <label for="description" class="form-label text-light fw-medium">{{ form.description.label }}</label>
+                    {{ form.description(class="form-control bg-transparent border-secondary text-white" + (" is-invalid" if form.description.errors else ""), placeholder="Summary of department operations...") }}
+                    {% if form.description.errors %}
+                        <div class="invalid-feedback">
+                            {{ form.description.errors[0] }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary px-4 rounded-pill">Save Department</button>
+                    <a href="{{ url_for('hr.list_departments') }}" class="btn btn-outline-secondary px-4 rounded-pill">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

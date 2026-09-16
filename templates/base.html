@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PayGenius AI - Smart Payroll. Intelligent Workforce.{% endblock %}</title>
+    
+    <!-- Meta tags for basic SEO -->
+    <meta name="description" content="PayGenius AI is a production-grade smart payroll and workforce intelligence platform.">
+    <meta name="author" content="PayGenius AI Team">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <!-- Main Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom py-3">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-cpu-fill me-2" viewBox="0 0 16 16" style="color: #a78bfa;">
+                    <path d="M6.5 6a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5z"/>
+                    <path d="M5.5.5a.5.5 0 0 0-1 0V2A2.5 2.5 0 0 0 2 4.5H.5a.5.5 0 0 0 0 1H2v1H.5a.5.5 0 0 0 0 1H2v1H.5a.5.5 0 0 0 0 1H2v1H.5a.5.5 0 0 0 0 1H2A2.5 2.5 0 0 0 4.5 14v1.5a.5.5 0 0 0 1 0V14h1v1.5a.5.5 0 0 0 1 0V14h1v1.5a.5.5 0 0 0 1 0V14h1v1.5a.5.5 0 0 0 1 0V14A2.5 2.5 0 0 0 14 11.5h1.5a.5.5 0 0 0 0-1H14v-1h1.5a.5.5 0 0 0 0-1H14v-1h1.5a.5.5 0 0 0 0-1H14v-1h1.5a.5.5 0 0 0 0-1H14A2.5 2.5 0 0 0 11.5 2V.5a.5.5 0 0 0-1 0V2h-1V.5a.5.5 0 0 0-1 0V2h-1V.5a.5.5 0 0 0-1 0V2h-1zM4 4.5A1.5 1.5 0 0 1 5.5 3h5A1.5 1.5 0 0 1 12 4.5v5A1.5 1.5 0 0 1 10.5 11h-5A1.5 1.5 0 0 1 4 9.5z"/>
+                </svg>
+                PayGenius AI
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link px-3 {% if request.endpoint == 'analytics.dashboard' %}active{% endif %}" href="{{ url_for('analytics.dashboard') }}">Dashboard</a>
+                    </li>
+                    {% if current_user.is_authenticated and current_user.role and current_user.role.name in [RoleType.ADMIN, RoleType.HR] %}
+                    <li class="nav-item">
+                        <a class="nav-link px-3 {% if '/hr/departments' in request.path %}active{% endif %}" href="{{ url_for('hr.list_departments') }}">Departments</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3 {% if '/hr/employees' in request.path %}active{% endif %}" href="{{ url_for('hr.list_employees') }}">Employees</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3 {% if request.endpoint == 'attendance_upload.upload_attendance_ui' %}active{% endif %}" href="{{ url_for('attendance_upload.upload_attendance_ui') }}">Attendance</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3 {% if request.endpoint and request.endpoint.startswith('payroll.') %}active{% endif %}" href="{{ url_for('payroll.payroll_ui') }}">Payroll</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link px-3 disabled" href="#" tabindex="-1" aria-disabled="true">Attendance</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3 disabled" href="#" tabindex="-1" aria-disabled="true">Payroll</a>
+                    </li>
+                    {% endif %}
+                    {% if current_user.is_authenticated and current_user.role and current_user.role.name == RoleType.ADMIN %}
+                    <li class="nav-item">
+                        <a class="nav-link px-3 {% if request.path == '/admin/create-user' %}active{% endif %}" href="{{ url_for('auth.create_user') }}">Create User</a>
+                    </li>
+                    {% endif %}
+                </ul>
+                <div class="d-flex align-items-center">
+                    {% if current_user and current_user.is_authenticated %}
+                        <div class="dropdown">
+                            <button class="btn btn-outline-custom dropdown-toggle btn-sm rounded-pill px-3 me-2" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                                Welcome, <strong>{{ current_user.username }}</strong>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end border-secondary shadow" aria-labelledby="userMenu" style="background-color: #120e1c;">
+                                <li>
+                                    <a class="dropdown-item text-light" href="{{ url_for('auth.change_password') }}">Change Password</a>
+                                </li>
+                                <li><hr class="dropdown-divider border-secondary"></li>
+                                <li>
+                                    <form action="{{ url_for('auth.logout') }}" method="POST" class="dropdown-item m-0 p-0" id="logout-form">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-link text-danger w-100 text-start text-decoration-none py-1 px-3">Sign Out</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-custom me-2 rounded-pill btn-sm px-3">Log In</a>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash message alerts container -->
+    <div class="container my-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category if category != 'error' else 'danger' }} alert-dismissible fade show border-0 rounded-4" role="alert" style="background-color: rgba(255, 255, 255, 0.05); color: #fff;">
+                        {{ message }}
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content Injection Block -->
+    <main class="container py-4 flex-grow-1">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-4 mt-auto">
+        <div class="container text-center">
+            <p class="mb-1 text-light"><strong>PayGenius AI</strong> - Smart Payroll. Intelligent Workforce.</p>
+            <p class="text-muted small mb-0">&copy; 2026 PayGenius AI. Built with Flask 3 & SQLAlchemy. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Global Loading Spinner Overlay -->
+    <div id="loading-overlay" class="loading-overlay d-none">
+        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        // Show loading spinner on form submissions
+        document.addEventListener('submit', function() {
+            const overlay = document.getElementById('loading-overlay');
+            if (overlay) {
+                overlay.classList.remove('d-none');
+            }
+        });
+        // Hide loading spinner on pageshow to handle backward/forward cache restores
+        window.addEventListener('pageshow', function() {
+            const overlay = document.getElementById('loading-overlay');
+            if (overlay) {
+                overlay.classList.add('d-none');
+            }
+        });
+        // Auto-dismiss Bootstrap flash alerts after 5 seconds (5000ms)
+        document.addEventListener('DOMContentLoaded', function() {
+            const alerts = document.querySelectorAll('.alert-dismissible');
+            alerts.forEach(function(alertElement) {
+                setTimeout(function() {
+                    if (document.body.contains(alertElement)) {
+                        const bsAlert = bootstrap.Alert.getOrCreateInstance(alertElement);
+                        if (bsAlert) {
+                            bsAlert.close();
+                        }
+                    }
+                }, 5000);
+            });
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

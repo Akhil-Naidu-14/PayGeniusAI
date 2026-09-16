@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}Bulk Attendance Upload | PayGenius AI{% endblock %}
+
+{% block content %}
+<div class="row g-4 mt-2">
+    <!-- Header Block -->
+    <div class="col-12 d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="text-white fw-bold mb-1 glow-text">Bulk Attendance Upload</h2>
+            <p class="text-muted mb-0 small">Import attendance records from Excel spreadsheet files (.xlsx).</p>
+        </div>
+    </div>
+
+    <!-- Error Alert (Global upload error if present) -->
+    {% if error_message %}
+    <div class="col-12">
+        <div class="alert alert-danger alert-dismissible fade show border-0 rounded-4" role="alert" style="background-color: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3);">
+            <div class="d-flex align-items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-exclamation-triangle-fill me-2" viewBox="0 0 16 16">
+                    <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                </svg>
+                <span>{{ error_message }}</span>
+            </div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Upload Summary Metrics Section -->
+    {% if summary %}
+    <div class="col-12">
+        <div class="glass-card p-4 mb-3">
+            <h5 class="text-white fw-bold mb-3 d-flex align-items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle-fill text-success me-2" viewBox="0 0 16 16">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l4.992-6.402a.75.75 0 0 0-.014-1.056z"/>
+                </svg>
+                Upload Results Summary
+            </h5>
+
+            <div class="row g-3">
+                <div class="col-md-3 col-6">
+                    <div class="p-3 rounded-3" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
+                        <div class="text-muted small text-uppercase fw-semibold">Processed</div>
+                        <div class="fs-3 fw-bold text-white mt-1">{{ summary.records_processed }}</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="p-3 rounded-3" style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3);">
+                        <div class="text-success small text-uppercase fw-semibold">Created</div>
+                        <div class="fs-3 fw-bold text-success mt-1">{{ summary.records_created }}</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="p-3 rounded-3" style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3);">
+                        <div class="text-info small text-uppercase fw-semibold">Updated</div>
+                        <div class="fs-3 fw-bold text-info mt-1">{{ summary.records_updated }}</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="p-3 rounded-3" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3);">
+                        <div class="text-danger small text-uppercase fw-semibold">Failed</div>
+                        <div class="fs-3 fw-bold text-danger mt-1">{{ summary.records_failed }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row-Level Errors Table -->
+            {% if summary.errors %}
+            <div class="mt-4">
+                <h6 class="text-warning fw-semibold mb-2">Row-Level Processing Errors ({{ summary.errors|length }}):</h6>
+                <div class="table-responsive rounded-3 overflow-hidden" style="border: 1px solid rgba(245, 158, 11, 0.3);">
+                    <table class="table table-dark table-striped mb-0 align-middle">
+                        <thead>
+                            <tr class="text-warning small text-uppercase border-secondary">
+                                <th style="width: 80px;">#</th>
+                                <th>Error Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for err in summary.errors %}
+                            <tr class="border-secondary">
+                                <td class="text-muted small">{{ loop.index }}</td>
+                                <td class="text-light small">{{ err }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- File Upload Form Card -->
+    <div class="col-lg-7 col-md-12">
+        <div class="glass-card p-4">
+            <h5 class="text-white fw-bold mb-3">Upload Attendance Spreadsheet</h5>
+            
+            <form action="{{ url_for('attendance_upload.upload_attendance_ui') }}" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                
+                <div class="mb-4">
+                    <label for="excel_file" class="form-label text-muted small fw-semibold">Excel File (.xlsx)</label>
+                    <input type="file" name="excel_file" id="excel_file" class="form-control bg-transparent border-secondary text-white" accept=".xlsx" required>
+                    <div class="form-text text-muted small">Select a valid .xlsx file containing employee attendance logs.</div>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                    <button type="submit" class="btn btn-primary rounded-pill px-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-upload me-2" viewBox="0 0 16 16">
+                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                            <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
+                        </svg>
+                        Upload & Import Records
+                    </button>
+                    <a href="/" class="btn btn-outline-secondary rounded-pill px-4">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Instructions / Format Requirements Card -->
+    <div class="col-lg-5 col-md-12">
+        <div class="glass-card p-4">
+            <h5 class="text-white fw-bold mb-3">File Format Instructions</h5>
+            <p class="text-muted small">The uploaded Excel spreadsheet must contain the following header columns (case-insensitive):</p>
+            
+            <ul class="list-group list-group-flush bg-transparent mb-3">
+                <li class="list-group-item bg-transparent text-light border-secondary small d-flex align-items-center">
+                    <span class="badge bg-primary me-2">Required</span>
+                    <code>employee_code</code> &mdash; Employee code string (e.g. EMP001)
+                </li>
+                <li class="list-group-item bg-transparent text-light border-secondary small d-flex align-items-center">
+                    <span class="badge bg-primary me-2">Required</span>
+                    <code>date</code> &mdash; Attendance date (YYYY-MM-DD)
+                </li>
+                <li class="list-group-item bg-transparent text-light border-secondary small d-flex align-items-center">
+                    <span class="badge bg-secondary me-2">Optional</span>
+                    <code>check_in</code> &mdash; Check-in timestamp (YYYY-MM-DD HH:MM:SS)
+                </li>
+                <li class="list-group-item bg-transparent text-light border-secondary small d-flex align-items-center">
+                    <span class="badge bg-secondary me-2">Optional</span>
+                    <code>check_out</code> &mdash; Check-out timestamp (YYYY-MM-DD HH:MM:SS)
+                </li>
+            </ul>
+
+            <div class="p-3 rounded-3" style="background: rgba(167, 139, 250, 0.1); border: 1px solid rgba(167, 139, 250, 0.2);">
+                <div class="text-info small fw-semibold mb-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle me-1" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                    </svg>
+                    Automatic Processing:
+                </div>
+                <div class="text-muted small">
+                    Existing attendance records for the same employee and date will be updated automatically.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

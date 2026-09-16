@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Downloading Payslip | PayGenius AI{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6 col-12 text-center">
+        <div class="glass-card p-5">
+            <div class="spinner-border text-primary mb-4" role="status" style="width: 3.5rem; height: 3.5rem;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            
+            <h4 class="text-white fw-bold mb-2 glow-text">Downloading Payslip</h4>
+            <p class="text-muted mb-4">Your download should begin automatically. Returning to the Payroll management page...</p>
+
+            <iframe src="{{ download_url }}" style="display:none;"></iframe>
+            
+            <script>
+              setTimeout(function () {
+                window.location.href = "{{ return_url }}";
+              }, 1200);
+            </script>
+            
+            <noscript>
+              <div class="p-3 rounded-3" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
+                <p class="text-light small mb-2">
+                  Download should start automatically. If not, <a href="{{ download_url }}" class="text-info fw-bold">click here to download</a>.
+                </p>
+                <p class="text-muted small mb-0">
+                  Then go back to <a href="{{ return_url }}" class="text-primary">Payroll</a>.
+                </p>
+              </div>
+            </noscript>
+        </div>
+    </div>
+</div>
+{% endblock %}

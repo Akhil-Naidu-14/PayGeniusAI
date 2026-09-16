@@ -1,0 +1,471 @@
+{% extends "base.html" %}
+
+{% block title %}Reports & Analytics - PayGenius AI{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Premium glassmorphism design variables and styles */
+    .glass-card {
+        background: rgba(26, 21, 44, 0.5);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 20px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        color: #fff;
+    }
+    
+    .glass-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(167, 139, 250, 0.3);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .badge-pass {
+        background: rgba(16, 185, 129, 0.15);
+        color: #10b981;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        border-radius: 8px;
+    }
+
+    .badge-warning {
+        background: rgba(245, 158, 11, 0.15);
+        color: #f59e0b;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+        border-radius: 8px;
+    }
+
+    .badge-fail {
+        background: rgba(239, 68, 68, 0.15);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        border-radius: 8px;
+    }
+
+    .chart-container {
+        position: relative;
+        width: 100%;
+        height: 280px;
+    }
+    
+    .exec-gradient-border {
+        border: 1px solid transparent;
+        background: linear-gradient(rgba(26, 21, 44, 0.9), rgba(26, 21, 44, 0.9)) padding-box,
+                    linear-gradient(135deg, #a78bfa, #6366f1) border-box;
+        border-radius: 20px;
+    }
+
+    .dashboard-title {
+        background: linear-gradient(135deg, #ffffff 0%, #a78bfa 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 800;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col">
+        <h1 class="dashboard-title mb-1">Analytics Dashboard</h1>
+        <p class="text-muted mb-0">
+            {% if is_admin %}
+                System-wide payroll summaries, attendance tracking, and compliance rule metrics.
+            {% else %}
+                Your personalized payroll performance, working hours, and leave breakdown.
+            {% endif %}
+        </p>
+    </div>
+    <div class="col-auto">
+        <span class="badge bg-dark border border-secondary text-light px-3 py-2 rounded-pill">
+            Month: {{ "%02d"|format(current_month) }} / {{ current_year }}
+        </span>
+    </div>
+</div>
+
+{% if is_admin and executive_summary %}
+<!-- AI Executive Summary Panel -->
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="glass-card exec-gradient-border p-4 shadow">
+            <div class="d-flex align-items-center mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-stars text-info me-2" viewBox="0 0 16 16">
+                    <path d="M7.657 6.247c.11-.33.576-.33.686 0l.645 1.937a.3.3 0 0 0 .285.205h2.037c.347 0 .492.446.21.65l-1.648 1.197a.3.3 0 0 0-.104.32l.645 1.938c.11.33-.27.605-.551.4L8.14 11.758a.3.3 0 0 0-.28 0l-1.648 1.197c-.282.206-.663-.07-.552-.4l.645-1.937a.3.3 0 0 0-.104-.32L4.553 9.04c-.282-.204-.136-.65.21-.65h2.037a.3.3 0 0 0 .285-.205l.672-2.015h-.002zM12.35 1.5a.25.25 0 0 1 .424 0l.24.72a.15.15 0 0 0 .142.102h.758a.25.25 0 0 1 .18.424l-.612.445a.15.15 0 0 0-.055.168l.24.72a.25.25 0 0 1-.385.28l-.612-.445a.15.15 0 0 0-.17 0l-.613.445a.25.25 0 0 1-.385-.28l.24-.72a.15.15 0 0 0-.054-.168l-.612-.445a.25.25 0 0 1 .18-.424h.757a.15.15 0 0 0 .143-.102l.24-.72z"/>
+                </svg>
+                <h4 class="mb-0 text-light fw-bold">Gemini AI Executive Summary</h4>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-8 border-end border-secondary">
+                    <h6 class="text-uppercase text-muted small fw-bold">Payroll & Attendance Summary</h6>
+                    <p class="lead" style="font-size: 1.05rem; line-height: 1.6; color: #e9ecef;">
+                        {{ executive_summary.summary }}
+                    </p>
+                </div>
+                <div class="col-lg-4 ps-lg-4">
+                    <h6 class="text-uppercase text-muted small fw-bold">Strategic HR Recommendations</h6>
+                    <p style="font-size: 0.95rem; line-height: 1.6; color: #ced4da;">
+                        {{ executive_summary.recommendation }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- ML Attendance Prediction Panel -->
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="glass-card p-4 shadow">
+            <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+                <div class="d-flex align-items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-graph-up-arrow text-primary me-2" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M0 0h1v15h15v1H0zm10 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4.9l-3.613 4.417a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61L13.445 4H10.5a.5.5 0 0 1-.5-.5"/>
+                    </svg>
+                    <h5 class="mb-0 text-light fw-bold">AI/ML Attendance Prediction & Workforce Risk Forecast</h5>
+                </div>
+            </div>
+
+            {% if prediction_data %}
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle mb-0" style="background: transparent;">
+                        <thead>
+                            <tr class="text-uppercase text-muted fs-8 border-secondary">
+                                <th>Employee</th>
+                                <th>Forecast Period</th>
+                                <th>Predicted Attendance</th>
+                                <th>Risk Band</th>
+                                <th>Model Validation Metrics</th>
+                                <th>Model Feature Contributions (z × w)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pred in prediction_data %}
+                                {% if pred.state == "PREDICTION_AVAILABLE" or pred.state == "EXPERIMENTAL" %}
+                                <tr class="border-secondary">
+                                    <td class="fw-semibold text-white">
+                                        {{ pred.employee_name }}
+                                        <div class="text-muted small fs-8">{{ pred.employee_code }}</div>
+                                    </td>
+                                    <td class="text-light small">{{ pred.forecast_period }}</td>
+                                    <td>
+                                        <span class="fs-6 fw-bold text-info">{{ pred.predicted_attendance_rate }}%</span>
+                                        {% if pred.state == "EXPERIMENTAL" %}
+                                            <div class="text-warning fs-8 fw-semibold">Experimental Forecast</div>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge {{ pred.risk_badge }} px-3 py-1 fs-8">{{ pred.risk_band }}</span>
+                                    </td>
+                                    <td class="text-muted small">
+                                        <div class="fw-semibold text-light">{{ pred.model_type }}</div>
+                                        {% if pred.validation_mae is not none %}
+                                            <div class="text-light fs-8">Avg Error: {{ pred.validation_mae }} percentage points (MAE)</div>
+                                        {% endif %}
+                                        <div class="text-muted fs-8">Training Dataset: {{ pred.training_samples }} monthly sample(s)</div>
+                                    </td>
+                                    <td class="text-muted small">
+                                        {% if pred.model_contributions %}
+                                            <ul class="mb-0 ps-3 fs-8">
+                                                {% for contrib in pred.model_contributions[:3] %}
+                                                    <li>
+                                                        <span class="text-light">{{ contrib.label }}:</span>
+                                                        <span class="{% if contrib.contribution >= 0 %}text-success{% else %}text-danger{% endif %} fw-semibold">
+                                                            {% if contrib.contribution >= 0 %}+{% endif %}{{ contrib.contribution }}%
+                                                        </span>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% else %}
+                                            <span class="text-muted fs-8">Contributions unavailable</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr class="border-secondary">
+                                    <td class="fw-semibold text-white">
+                                        {{ pred.employee_name if pred.employee_name else "Employee" }}
+                                    </td>
+                                    <td colspan="5" class="text-muted py-3 small">
+                                        <em>{{ pred.message }}</em>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="p-3 text-center text-muted">
+                    <p class="mb-1">Insufficient historical attendance data for ML forecasting.</p>
+                    <small>Minimum 15 monthly attendance samples are required to calibrate the predictive model.</small>
+                </div>
+            {% endif %}
+
+            <div class="mt-3 pt-2 border-top border-secondary text-muted fs-8">
+                <div><span class="text-warning fw-semibold">Advisory notice:</span> ML forecast based on historical attendance patterns. For workforce planning only; human review required.</div>
+                <div class="mt-1"><span class="text-info fw-semibold">Model notice:</span> Feature contributions indicate standardized linear model influence relative to baseline, not causal effects. Baseline calculation assumes a standard Monday–Friday work week (5 days/week); organizational holidays are not dynamically excluded.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- 1. Payroll Trend -->
+    <div class="col-lg-8">
+        <div class="glass-card p-4 h-100">
+            <h5 class="fw-bold mb-3 text-light">Payroll Costs Trend</h5>
+            <div class="chart-container">
+                <canvas id="payrollTrendChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Leave Statistics or Department salary -->
+    <div class="col-lg-4">
+        <div class="glass-card p-4 h-100">
+            <h5 class="fw-bold mb-3 text-light">Leave Allocation Summary</h5>
+            <div class="chart-container">
+                <canvas id="leaveStatsChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- 3. Attendance Trend -->
+    <div class="col-lg-8">
+        <div class="glass-card p-4 h-100">
+            <h5 class="fw-bold mb-3 text-light">Attendance Hours Trend</h5>
+            <div class="chart-container">
+                <canvas id="attendanceTrendChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Distribution or personal stats summary -->
+    <div class="col-lg-4">
+        {% if is_admin %}
+        <div class="glass-card p-4 h-100 mb-4">
+            <h5 class="fw-bold mb-3 text-light">Department Salary Share</h5>
+            <div class="chart-container">
+                <canvas id="deptDistributionChart"></canvas>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if is_admin %}
+        <!-- 5. Compliance Risk Summary -->
+        <div class="glass-card p-4">
+            <h5 class="fw-bold mb-3 text-light">Compliance Risk Logs</h5>
+            <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-secondary">
+                <span class="text-light">PASS Rules</span>
+                <span class="badge badge-pass px-3 py-2" id="compliance-pass">0</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-secondary">
+                <span class="text-light">WARNING Rules</span>
+                <span class="badge badge-warning px-3 py-2" id="compliance-warning">0</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center py-2">
+                <span class="text-light">FAIL Rules</span>
+                <span class="badge badge-fail px-3 py-2" id="compliance-fail">0</span>
+            </div>
+        </div>
+        {% else %}
+        <!-- Personal employee profile info card for personal dashboard layout balance -->
+        <div class="glass-card p-4 h-100 d-flex flex-column justify-content-center text-center">
+            <div class="mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-shield-check text-info" viewBox="0 0 16 16">
+                    <path d="M8 14.933a.87.87 0 0 0 .1-.025c1.23-.324 2.378-1.375 3.001-2.024.623-.649 1.185-1.561 1.397-2.66.218-1.121.206-2.37.082-3.736L8 3.868 3.42 6.488c-.124 1.366-.136 2.615.082 3.736.212 1.1.774 2.01 1.397 2.66.623.65 1.77 1.7 3 2.024a.87.87 0 0 0 .1.025zm0 1c-.815 0-1.579-.37-2.107-.9-.636-.638-1.344-1.745-1.583-2.984C3.896 9.727 3.882 8.167 4 6.7a1 1 0 0 1 .58-.87L8 3.015l3.42 2.815c.4.15.54.54.58.87.118 1.467.104 3.027-.31 4.349-.239 1.239-.947 2.346-1.583 2.984-.528.53-1.292.9-2.107.9z"/>
+                    <path d="M10.854 6.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 8.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
+                </svg>
+            </div>
+            <h5 class="fw-bold mb-2">Secure Personal Space</h5>
+            <p class="text-muted small">
+                All metrics are isolated and secured. Organizational summaries and colleague data are restricted.
+            </p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Chart.js CDN inclusion -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // General chart styling configurations for Sleek Dark Mode
+    const defaultGridColor = 'rgba(255, 255, 255, 0.05)';
+    const defaultTextColor = 'rgba(255, 255, 255, 0.6)';
+
+    // Dynamic data resolution path helper
+    const is_admin = {{ 'true' if is_admin else 'false' }};
+    const payrollUrl = is_admin ? '/analytics/payroll-trend?last_n_months=6' : '/analytics/personal/payroll-trend?last_n_months=6';
+    const attendanceUrl = is_admin ? '/analytics/attendance-trend?last_n_months=6' : '/analytics/personal/attendance-trend?last_n_months=6';
+    const leaveUrl = is_admin ? '/analytics/leave-stats/{{ current_year }}' : '/analytics/personal/leave-stats/{{ current_year }}';
+    const complianceUrl = '/analytics/compliance-risk/{{ current_month }}/{{ current_year }}';
+
+    // 1. Payroll Trend Chart
+    fetch(payrollUrl)
+        .then(r => r.json())
+        .then(res => {
+            if(res.success) {
+                const ctx = document.getElementById('payrollTrendChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: res.data.labels,
+                        datasets: [{
+                            label: is_admin ? 'Total Payroll Cost' : 'Your Net Take-Home',
+                            data: res.data.total_cost,
+                            borderColor: '#a78bfa',
+                            backgroundColor: 'rgba(167, 139, 250, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { labels: { color: defaultTextColor } }
+                        },
+                        scales: {
+                            x: { grid: { color: defaultGridColor }, ticks: { color: defaultTextColor } },
+                            y: { grid: { color: defaultGridColor }, ticks: { color: defaultTextColor } }
+                        }
+                    }
+                });
+            }
+        });
+
+    // 2. Leave Statistics Chart
+    fetch(leaveUrl)
+        .then(r => r.json())
+        .then(res => {
+            if(res.success) {
+                const ctx = document.getElementById('leaveStatsChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Approved', 'Rejected', 'Cancelled', 'Pending/Other'],
+                        datasets: [{
+                            data: [
+                                res.data.approved,
+                                res.data.rejected,
+                                res.data.cancelled,
+                                Math.max(0, res.data.total_requests - res.data.approved - res.data.rejected - res.data.cancelled)
+                            ],
+                            backgroundColor: [
+                                '#10b981', // green
+                                '#ef4444', // red
+                                '#f59e0b', // orange
+                                '#6366f1'  // blue
+                            ],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { 
+                                position: 'right',
+                                labels: { color: defaultTextColor } 
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
+    // 3. Attendance Trend Chart
+    fetch(attendanceUrl)
+        .then(r => r.json())
+        .then(res => {
+            if(res.success) {
+                const ctx = document.getElementById('attendanceTrendChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: res.data.labels,
+                        datasets: [
+                            {
+                                label: 'Working Hours',
+                                data: res.data.working_hours,
+                                backgroundColor: '#6366f1'
+                            },
+                            {
+                                label: 'Overtime Hours',
+                                data: res.data.overtime_hours,
+                                backgroundColor: '#a78bfa'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { labels: { color: defaultTextColor } }
+                        },
+                        scales: {
+                            x: { grid: { color: defaultGridColor }, ticks: { color: defaultTextColor } },
+                            y: { grid: { color: defaultGridColor }, ticks: { color: defaultTextColor } }
+                        }
+                    }
+                });
+            }
+        });
+
+    // 4. Department Salary Distribution (HR/Admin only)
+    if(is_admin) {
+        fetch('/analytics/department-salary')
+            .then(r => r.json())
+            .then(res => {
+                if(res.success) {
+                    const ctx = document.getElementById('deptDistributionChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: res.data.departments,
+                            datasets: [{
+                                data: res.data.total_salaries,
+                                backgroundColor: [
+                                    '#a78bfa',
+                                    '#6366f1',
+                                    '#10b981',
+                                    '#f59e0b',
+                                    '#ec4899'
+                                ],
+                                borderWidth: 0
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { 
+                                    position: 'right',
+                                    labels: { color: defaultTextColor } 
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+
+        // 5. Compliance Risk Metrics (HR/Admin only)
+        fetch(complianceUrl)
+            .then(r => r.json())
+            .then(res => {
+                if(res.success) {
+                    document.getElementById('compliance-pass').textContent = res.data.pass;
+                    document.getElementById('compliance-warning').textContent = res.data.warning;
+                    document.getElementById('compliance-fail').textContent = res.data.fail;
+                }
+            });
+    }
+</script>
+{% endblock %}

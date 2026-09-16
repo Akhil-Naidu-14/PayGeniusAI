@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} | PayGenius AI{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-3">
+    <div class="col-xl-9 col-lg-10">
+        <!-- Back Link -->
+        <div class="mb-3">
+            <a href="{{ url_for('hr.list_employees') }}" class="text-muted text-decoration-none d-inline-flex align-items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left me-2" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+                </svg>
+                Back to Employees List
+            </a>
+        </div>
+
+        <form method="POST">
+            {{ form.csrf_token }}
+
+            <!-- Header Card -->
+            <div class="glass-card p-4 mb-4">
+                <h3 class="text-white mb-1 fw-bold">{{ title }}</h3>
+                <p class="text-muted small mb-0">Define corporate identity and workforce registry metrics.</p>
+            </div>
+
+            <!-- Section 1: Personal Details -->
+            <div class="glass-card p-4 mb-4">
+                <h4 class="text-white mb-4 fs-5 border-bottom border-secondary pb-2 fw-semibold">Personal Information</h4>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label for="employee_code" class="form-label text-light small fw-medium">{{ form.employee_code.label }}</label>
+                        {{ form.employee_code(class="form-control bg-transparent border-secondary text-white" + (" is-invalid" if form.employee_code.errors else ""), placeholder="e.g., EMP101") }}
+                        {% if form.employee_code.errors %}
+                            <div class="invalid-feedback">{{ form.employee_code.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-4">
+                        <label for="first_name" class="form-label text-light small fw-medium">{{ form.first_name.label }}</label>
+                        {{ form.first_name(class="form-control bg-transparent border-secondary text-white" + (" is-invalid" if form.first_name.errors else ""), placeholder="First Name") }}
+                        {% if form.first_name.errors %}
+                            <div class="invalid-feedback">{{ form.first_name.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-4">
+                        <label for="last_name" class="form-label text-light small fw-medium">{{ form.last_name.label }}</label>
+                        {{ form.last_name(class="form-control bg-transparent border-secondary text-white" + (" is-invalid" if form.last_name.errors else ""), placeholder="Last Name") }}
+                        {% if form.last_name.errors %}
+                            <div class="invalid-feedback">{{ form.last_name.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="email" class="form-label text-light small fw-medium">{{ form.email.label }}</label>
+                        {{ form.email(class="form-control bg-transparent border-secondary text-white" + (" is-invalid" if form.email.errors else ""), placeholder="email@paygenius.ai") }}
+                        {% if form.email.errors %}
+                            <div class="invalid-feedback">{{ form.email.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="phone" class="form-label text-light small fw-medium">{{ form.phone.label }}</label>
+                        {{ form.phone(class="form-control bg-transparent border-secondary text-white" + (" is-invalid" if form.phone.errors else ""), placeholder="Phone Number") }}
+                        {% if form.phone.errors %}
+                            <div class="invalid-feedback">{{ form.phone.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="gender" class="form-label text-light small fw-medium">{{ form.gender.label }}</label>
+                        {{ form.gender(class="form-select bg-transparent border-secondary text-light" + (" is-invalid" if form.gender.errors else "")) }}
+                        {% if form.gender.errors %}
+                            <div class="invalid-feedback">{{ form.gender.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="date_of_birth" class="form-label text-light small fw-medium">{{ form.date_of_birth.label }}</label>
+                        {{ form.date_of_birth(class="form-control bg-transparent border-secondary text-white" + (" is-invalid" if form.date_of_birth.errors else ""), type="date") }}
+                        {% if form.date_of_birth.errors %}
+                            <div class="invalid-feedback">{{ form.date_of_birth.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Employment & Salary Details -->
+            <div class="glass-card p-4 mb-4">
+                <h4 class="text-white mb-4 fs-5 border-bottom border-secondary pb-2 fw-semibold">Employment Details</h4>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="joining_date" class="form-label text-light small fw-medium">{{ form.joining_date.label }}</label>
+                        {{ form.joining_date(class="form-control bg-transparent border-secondary text-white" + (" is-invalid" if form.joining_date.errors else ""), type="date") }}
+                        {% if form.joining_date.errors %}
+                            <div class="invalid-feedback">{{ form.joining_date.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="employment_type" class="form-label text-light small fw-medium">{{ form.employment_type.label }}</label>
+                        {{ form.employment_type(class="form-select bg-transparent border-secondary text-light" + (" is-invalid" if form.employment_type.errors else "")) }}
+                        {% if form.employment_type.errors %}
+                            <div class="invalid-feedback">{{ form.employment_type.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="department_id" class="form-label text-light small fw-medium">{{ form.department_id.label }}</label>
+                        {{ form.department_id(class="form-select bg-transparent border-secondary text-light" + (" is-invalid" if form.department_id.errors else "")) }}
+                        {% if form.department_id.errors %}
+                            <div class="invalid-feedback">{{ form.department_id.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="status" class="form-label text-light small fw-medium">{{ form.status.label }}</label>
+                        {{ form.status(class="form-select bg-transparent border-secondary text-light" + (" is-invalid" if form.status.errors else "")) }}
+                        {% if form.status.errors %}
+                            <div class="invalid-feedback">{{ form.status.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-12">
+                        <label for="basic_salary" class="form-label text-light small fw-medium">{{ form.basic_salary.label }}</label>
+                        {{ form.basic_salary(class="form-control bg-transparent border-secondary text-white" + (" is-invalid" if form.basic_salary.errors else ""), type="number", step="0.01", placeholder="0.00") }}
+                        <div class="form-text text-muted small">Enter annual base salary. Monthly salary is calculated automatically (/12) during payroll.</div>
+                        {% if form.basic_salary.errors %}
+                            <div class="invalid-feedback">{{ form.basic_salary.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Financial & Emergency Details -->
+            <div class="glass-card p-4 mb-4">
+                <h4 class="text-white mb-4 fs-5 border-bottom border-secondary pb-2 fw-semibold">Bank & Identity Information</h4>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="bank_account_number" class="form-label text-light small fw-medium">{{ form.bank_account_number.label }}</label>
+                        {{ form.bank_account_number(class="form-control bg-transparent border-secondary text-white" + (" is-invalid" if form.bank_account_number.errors else ""), placeholder="Account Number") }}
+                        {% if form.bank_account_number.errors %}
+                            <div class="invalid-feedback">{{ form.bank_account_number.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="ifsc_code" class="form-label text-light small fw-medium">{{ form.ifsc_code.label }}</label>
+                        {{ form.ifsc_code(class="form-control bg-transparent border-secondary text-white" + (" is-invalid" if form.ifsc_code.errors else ""), placeholder="IFSC Code") }}
+                        {% if form.ifsc_code.errors %}
+                            <div class="invalid-feedback">{{ form.ifsc_code.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="pan_number" class="form-label text-light small fw-medium">{{ form.pan_number.label }}</label>
+                        {{ form.pan_number(class="form-control bg-transparent border-secondary text-white" + (" is-invalid" if form.pan_number.errors else ""), placeholder="PAN Details") }}
+                        {% if form.pan_number.errors %}
+                            <div class="invalid-feedback">{{ form.pan_number.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="aadhaar_number" class="form-label text-light small fw-medium">{{ form.aadhaar_number.label }}</label>
+                        {{ form.aadhaar_number(class="form-control bg-transparent border-secondary text-white" + (" is-invalid" if form.aadhaar_number.errors else ""), placeholder="Aadhaar ID") }}
+                        {% if form.aadhaar_number.errors %}
+                            <div class="invalid-feedback">{{ form.aadhaar_number.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <h4 class="text-white mt-4 mb-3 fs-5 border-bottom border-secondary pb-2 fw-semibold">Emergency Contacts</h4>
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label for="emergency_contact" class="form-label text-light small fw-medium">{{ form.emergency_contact.label }}</label>
+                        {{ form.emergency_contact(class="form-control bg-transparent border-secondary text-white" + (" is-invalid" if form.emergency_contact.errors else ""), placeholder="Emergency Phone Contact") }}
+                        {% if form.emergency_contact.errors %}
+                            <div class="invalid-feedback">{{ form.emergency_contact.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-12">
+                        <label for="address" class="form-label text-light small fw-medium">{{ form.address.label }}</label>
+                        {{ form.address(class="form-control bg-transparent border-secondary text-white" + (" is-invalid" if form.address.errors else ""), rows="3", placeholder="Permanent/Current Residence Address...") }}
+                        {% if form.address.errors %}
+                            <div class="invalid-feedback">{{ form.address.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button Cards -->
+            <div class="glass-card p-3 d-flex gap-2">
+                <button type="submit" class="btn btn-primary px-5 rounded-pill">Save Employee</button>
+                <a href="{{ url_for('hr.list_employees') }}" class="btn btn-outline-secondary px-4 rounded-pill">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

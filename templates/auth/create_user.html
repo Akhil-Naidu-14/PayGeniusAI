@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Register Account | Admin Panel | PayGenius AI{% endblock %}
+
+{% block content %}
+<div class="row mt-4 g-4">
+    <!-- Form Column -->
+    <div class="col-lg-5 col-md-12">
+        <div class="glass-card shadow-lg p-4">
+            <div class="mb-4">
+                <a href="/" class="btn btn-outline-custom btn-sm rounded-pill mb-3 px-3">
+                    &larr; Back to Dashboard
+                </a>
+                <h2 class="text-white fw-bold mb-1">Provision Account</h2>
+                <p class="text-muted small">Register a new user and assign administrative privileges</p>
+            </div>
+            
+            <form method="POST" action="">
+                {{ form.hidden_tag() }}
+                
+                <!-- Username -->
+                <div class="mb-3">
+                    {{ form.username.label(class="form-label text-light small fw-medium") }}
+                    {{ form.username(class="form-control rounded-3 py-2 bg-transparent text-white border-secondary" + (" is-invalid" if form.username.errors else ""), placeholder="e.g. employee_john") }}
+                    {% if form.username.errors %}
+                        {% for error in form.username.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                
+                <!-- Email -->
+                <div class="mb-3">
+                    {{ form.email.label(class="form-label text-light small fw-medium") }}
+                    {{ form.email(class="form-control rounded-3 py-2 bg-transparent text-white border-secondary" + (" is-invalid" if form.email.errors else ""), placeholder="e.g. john@paygenius.ai") }}
+                    {% if form.email.errors %}
+                        {% for error in form.email.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                
+                <!-- Password -->
+                <div class="mb-3">
+                    {{ form.password.label(class="form-label text-light small fw-medium") }}
+                    {{ form.password(class="form-control rounded-3 py-2 bg-transparent text-white border-secondary" + (" is-invalid" if form.password.errors else ""), placeholder="Enter initial secure password") }}
+                    {% if form.password.errors %}
+                        {% for error in form.password.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                
+                <!-- Confirm Password -->
+                <div class="mb-3">
+                    {{ form.confirm_password.label(class="form-label text-light small fw-medium") }}
+                    {{ form.confirm_password(class="form-control rounded-3 py-2 bg-transparent text-white border-secondary" + (" is-invalid" if form.confirm_password.errors else ""), placeholder="Confirm secure password") }}
+                    {% if form.confirm_password.errors %}
+                        {% for error in form.confirm_password.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                
+                <!-- Assigned Privilege Role -->
+                <div class="mb-3">
+                    {{ form.role_id.label(class="form-label text-light small fw-medium") }}
+                    {{ form.role_id(class="form-select rounded-3 py-2 bg-transparent text-white border-secondary" + (" is-invalid" if form.role_id.errors else ""), style="background-color: #120e1c !important;") }}
+                    {% if form.role_id.errors %}
+                        {% for error in form.role_id.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                <!-- Link to Employee -->
+                <div class="mb-4">
+                    {{ form.employee_id.label(class="form-label text-light small fw-medium") }}
+                    {{ form.employee_id(class="form-select rounded-3 py-2 bg-transparent text-white border-secondary" + (" is-invalid" if form.employee_id.errors else ""), style="background-color: #120e1c !important;") }}
+                    {% if form.employee_id.errors %}
+                        {% for error in form.employee_id.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                
+                <!-- Submit -->
+                <div class="d-grid mt-4">
+                    {{ form.submit(class="btn btn-premium rounded-3 py-2 fw-semibold") }}
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Active User Directory Listing -->
+    <div class="col-lg-7 col-md-12">
+        <div class="glass-card shadow-lg p-4">
+            <h3 class="text-white mb-1 fw-bold">Active User Accounts</h3>
+            <p class="text-muted small mb-4">View provisioned system accounts and reset user passwords</p>
+            <div class="table-responsive">
+                <table class="table table-dark table-hover table-striped align-middle mb-0" style="background: transparent;">
+                    <thead>
+                        <tr class="text-uppercase text-muted fs-7 border-secondary">
+                            <th class="ps-3 py-2">Username</th>
+                            <th class="py-2">Email</th>
+                            <th class="py-2">Role</th>
+                            <th class="py-2 text-end pe-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if users %}
+                            {% for u in users %}
+                                <tr class="border-secondary">
+                                    <td class="ps-3 py-2 fw-semibold text-white">{{ u.username }}</td>
+                                    <td class="py-2 text-muted small">{{ u.email }}</td>
+                                    <td class="py-2">
+                                        <span class="badge bg-secondary rounded-pill px-3 py-1 fs-8">{{ u.role.name if u.role else "None" }}</span>
+                                    </td>
+                                    <td class="py-2 text-end pe-3">
+                                        <a href="{{ url_for('auth.reset_password', user_id=u.id) }}" class="btn btn-outline-light btn-sm rounded-pill px-3">
+                                            Reset Password
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">
+                                    No active accounts found.
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

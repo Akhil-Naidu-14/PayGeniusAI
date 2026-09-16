@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}500 Internal Server Error | PayGenius AI{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-8 col-lg-6 text-center">
+        <div class="glass-card py-5">
+            <h1 class="display-1 fw-bold text-warning mb-3" style="text-shadow: 0 0 15px rgba(255, 193, 7, 0.4);">500</h1>
+            <h2 class="text-white mb-4">Internal Server Error</h2>
+            <p class="text-muted mb-5">
+                The platform encountered an unexpected technical issue. Our system administrators have been notified via logs.
+            </p>
+            <a href="/" class="btn btn-premium rounded-pill px-5 py-2">Return to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
